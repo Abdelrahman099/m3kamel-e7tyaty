@@ -1,0 +1,333 @@
+@import "tailwindcss";
+
+/* ============================================================
+   مع كامل احطياتي — ملف القضية
+   الموقع دوسيه: ورق، أختام، مشابك، وشطب.
+   ============================================================ */
+@theme {
+  /* الأسطح */
+  --color-manila: #C9B78E;
+  /* كرتون الفولدر */
+  --color-manila-2: #B8A277;
+  /* لسان الفولدر */
+  --color-paper: #F4EEDF;
+  /* الورقة */
+  --color-paper-2: #E9E1CB;
+  /* ورقة تانية / مظلّلة */
+  --color-paper-3: #DCD3BC;
+  /* خانة الصورة */
+
+  /* الحبر */
+  --color-ink: #241F17;
+  --color-ink-2: #3A3227;
+  --color-muted: #6E6350;
+  --color-faint: #8C8068;
+  --color-rule: #C0B392;
+
+  /* التأكيد */
+  --color-stamp: #A81E17;
+  /* الختم والشطب */
+  --color-duck: #FFCE3E;
+  /* البطة — اللون الوحيد المضيء */
+  --color-duck-dim: #E0AE1C;
+  --color-beak: #FF8A1F;
+
+  --font-display: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ============================================================
+   الأساس
+   ============================================================ */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--color-manila);
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-manila);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.is-loading {
+  overflow: hidden;
+  height: 100vh;
+}
+
+::selection {
+  background: var(--color-duck);
+  color: var(--color-ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   نسيج الورق — بيلف الموقع كله
+   ============================================================ */
+.fibers {
+  position: relative;
+}
+
+/* Keep the overlay fixed: unlayered .fibers overrides Tailwind utilities. */
+.preloader {
+  position: fixed;
+}
+
+.fibers::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(120, 95, 55, 0.045) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(0deg, rgba(120, 95, 55, 0.03) 0 1px, transparent 1px 7px);
+}
+
+/* حبيبات على الشاشة كلها */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+/* ============================================================
+   الورقة — الوحدة الأساسية في الموقع
+   ============================================================ */
+.sheet {
+  background: var(--color-paper);
+  box-shadow: -3px 5px 0 rgba(60, 45, 20, 0.2);
+  position: relative;
+}
+
+.sheet-2 {
+  background: var(--color-paper-2);
+}
+
+/* ورقة مايلة شوية — للكروت المكدّسة */
+.sheet-tilt-a {
+  transform: rotate(-0.5deg);
+}
+
+.sheet-tilt-b {
+  transform: rotate(0.65deg);
+}
+
+/* ============================================================
+   الختم
+   ============================================================ */
+.stamp {
+  display: inline-block;
+  border: 4px solid var(--color-stamp);
+  border-radius: 8px;
+  padding: 0.45rem 1rem;
+  color: var(--color-stamp);
+  font-family: var(--font-display);
+  font-weight: 700;
+  /* مفيش letter-spacing — الحروف العربية بتتوصل، وأي مسافة بتقطع الوصل */
+  line-height: 1.25;
+  text-align: center;
+  /* حواف مهترية زي الختم الحقيقي */
+  opacity: 0.92;
+}
+
+.stamp-duck {
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+  background: var(--color-duck);
+  opacity: 1;
+}
+
+/* ============================================================
+   الشطب — الحتة اللي البطة بتغطيها
+   ============================================================ */
+.redact {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  cursor: help;
+}
+
+.redact>span {
+  position: relative;
+  z-index: 0;
+}
+
+.redact::after {
+  content: "";
+  position: absolute;
+  inset: -0.1em -0.28em;
+  z-index: 1;
+  background: var(--color-ink);
+  border-radius: 2px;
+  transform-origin: right center;
+  transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.redact:hover::after,
+.redact[data-open="true"]::after {
+  transform: scaleX(0);
+}
+
+/* شطب بالقلم — خط مايل فوق الكلام */
+.censored-word {
+  display: inline-block;
+  margin-inline: 0.15em;
+  padding: 0 0.3em;
+  border: 0;
+  border-radius: 2px;
+  background: var(--color-ink);
+  color: transparent;
+  font: inherit;
+  line-height: 1.25;
+  vertical-align: baseline;
+  cursor: pointer;
+}
+
+.censored-word > span { visibility: hidden; }
+.censored-word:hover { background: var(--color-stamp); }
+.censored-word:focus-visible { outline: 2px solid var(--color-stamp); outline-offset: 3px; }
+
+.struck {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-stamp);
+  text-decoration-thickness: 3px;
+  color: var(--color-faint);
+}
+
+/* ============================================================
+   فواصل
+   ============================================================ */
+.rule-dashed {
+  border-color: var(--color-rule);
+  border-style: dashed;
+}
+
+.rule-solid {
+  border-color: var(--color-rule);
+}
+
+/* سطر منقّط للتوقيع */
+.dotline {
+  border-bottom: 1px dotted var(--color-faint);
+}
+
+/* ============================================================
+   الحقول — شكل استمارة رسمية
+   ============================================================ */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-faint);
+  opacity: 0.75;
+}
+
+.field {
+  width: 100%;
+  background: #FBF7EC;
+  border: 1px solid var(--color-rule);
+  border-radius: 0;
+  padding: 0.8rem 0.95rem;
+  color: var(--color-ink);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--color-ink);
+  background: #FFFDF6;
+  box-shadow: inset 0 0 0 2px rgba(255, 206, 62, 0.35);
+}
+
+/* سطور الكتابة جوه الـ textarea — زي ورق الاستمارات */
+.field-lined {
+  background-image: repeating-linear-gradient(#FBF7EC 0 30px,
+      var(--color-rule) 30px 31px);
+  line-height: 31px;
+  padding-top: 0.35rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   الحركة
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   سكرول بار
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-manila-2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-2);
+  border: 3px solid var(--color-manila-2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink);
+}
+
+/* موجة سطح الميّة في البريلودر */
+@keyframes wave {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+
+
+}
